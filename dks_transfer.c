@@ -57,3 +57,34 @@ void dks_send_file(struct tls *tls, char *file_to_send)
         tls_write(tls, buffer, strlen(buffer));            
     }
 }
+
+void dks_send_file_mem(struct tls *tls, char *file_data, long length)
+{
+    char buffer[1024];
+
+    // send the file size
+    sprintf(buffer, "%ld\r", length);
+
+    tls_write(tls, buffer, strlen(buffer));
+
+    int remaining = length;
+
+    char *fp = file_data;
+
+    // send the file
+    int read_count;
+    do
+    {
+        read_count = 1024;
+        if(read_count > remaining) read_count = remaining;
+
+        memcpy(buffer, fp, read_count);
+        fp += read_count;
+
+        // send to the HSM
+        tls_write(tls, buffer, read_count);
+
+        remaining -= read_count;
+
+    } while (remaining > 0);
+}
