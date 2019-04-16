@@ -52,10 +52,17 @@ void dks_send_file(struct tls *tls, char *file_to_send)
         printf("\r\nUnable to open (%s).\r\n", file_to_send);
 
         // send 0 which means the file wasn't found
-        sprintf(buffer, "0\r0000000");
-
-        tls_write(tls, buffer, strlen(buffer));            
+        dks_send_file_none(tls);
     }
+}
+
+void dks_send_file_none(struct tls *tls)
+{
+    char buffer[16];
+
+    sprintf(buffer, "0\r0000000");
+
+    tls_write(tls, buffer, strlen(buffer));  
 }
 
 void dks_send_file_mem(struct tls *tls, char *file_data, long length)
