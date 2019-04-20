@@ -112,3 +112,70 @@ void dks_send_file_mem(struct tls *tls, char *file_data, long length)
 
     } while (remaining > 0);
 }
+
+char *dks_recv_from_hsm(struct tls *tls, unsigned int num_bytes_to_receive)
+{
+    // first, make sure we can actually allocate memory
+    char *result_buffer = malloc(num_bytes_to_receive)+1;
+    char *error_message = NULL;
+
+    if (result_buffer == NULL)
+    {
+        error_message = "FAILED: Not enough memory on host.";
+        goto failed;
+    }
+
+    char msg_buffer[256];
+
+    // Send OK
+    int n = snprintf(msg_buffer, 255, "OK:{%i}", num_bytes_to_receive);
+    if (n < 0 || n > 255)
+    {
+        error_message = "FAILED: Format error (OK)";
+        goto failed;
+    }
+    else
+    {
+        tls_write(tls, msg_buffer, strlen(msg_buffer));
+    }
+    
+    // Receive the data
+    int received_bytes = 0;
+    while(received_bytes < num_bytes_to_receive)
+    {
+        int count = tls_read(tls, &result_buffer[received_bytes], (num_bytes_to_receive - received_bytes));
+        received_bytes += count;
+    }
+    result_buffer[received_bytes] = 0;
+
+
+    // Send Received
+    n = snprintf(msg_buffer, 255, "RECEIVED:{%i}", received_bytes);
+    if (n < 0 || n > 255)
+    {
+        error_message = "FAILED: Format error (RECEIVED)";
+        goto failed;
+    }
+    else
+    {
+        tls_write(tls, msg_buffer, strlen(msg_buffer));
+    }
+
+    // we didn't get the number of bytes that we wanted
+    if(received_bytes != num_bytes_to_receive)
+    {
+        goto failed;
+    }
+
+    // return data
+    return result_buffer;
+
+failed:
+    free(result_buffer);
+    if(error_message != NULL)
+    {
+        tls_write(tls, error_message, strlen(error_message));
+    }
+
+    return NULL;
+}

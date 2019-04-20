@@ -28,7 +28,10 @@ typedef enum __hsm_mgmt_codes
     MGMTCODE_RECIEVE_RMT_KEKEK = 0x11121315,
 
     // the HSM wants to send a local KEKEK for a remote restore
-    MGMTCODE_SEND_LCL_KEKEK    = 0x11121316
+    MGMTCODE_SEND_LCL_KEKEK    = 0x11121316,
+
+    // the HSM wants to send a local KEKEK for a remote restore
+    MGMTCODE_SEND_EXPORT_DATA  = 0x11121317
 } hsm_mgmt_codes_t;
 
 #endif
