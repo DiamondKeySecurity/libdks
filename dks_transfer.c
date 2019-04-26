@@ -116,7 +116,7 @@ void dks_send_file_mem(struct tls *tls, char *file_data, long length)
 char *dks_recv_from_hsm(struct tls *tls, unsigned int num_bytes_to_receive)
 {
     // first, make sure we can actually allocate memory
-    char *result_buffer = malloc(num_bytes_to_receive)+1;
+    char *result_buffer = malloc(num_bytes_to_receive+1);
     char *error_message = NULL;
 
     if (result_buffer == NULL)
