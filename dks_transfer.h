@@ -23,6 +23,7 @@
 // Code for using TLS to transfer files to the HSM
 void dks_send_file(struct tls *tls, char *file_to_send);
 void dks_send_file_mem(struct tls *tls, char *file_data, long length);
+void dks_send_file_fp(struct tls *tls, FILE *fp);
 void dks_send_file_none(struct tls *tls);
 char *dks_recv_from_hsm(struct tls *tls, unsigned int num_bytes_to_receive);
 
