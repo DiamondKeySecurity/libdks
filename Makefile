@@ -16,11 +16,15 @@
 #
 # Script to import CrypTech code into DKS HSM folders.
 #
+DKS_ROOT ?= $(abspath ../..)
+
 LIBDKS_SRC ?= .
 LIBDKS_BUILD ?= .
 
 SOURCES := $(wildcard $(LIBDKS_SRC)/*.c)
 OBJECTS := $(patsubst $(LIBDKS_SRC)/%.c, $(LIBDKS_BUILD)/%.o, $(SOURCES))
+LIBRESSL_BLD := ${DKS_ROOT}/sw/thirdparty/libressl-portable
+LIBERSSL_INCLUDE := ${LIBRESSL_BLD}/include
 
 LIB		= $(LIBDKS_BUILD)/libdks.a
 
@@ -30,7 +34,7 @@ ${LIB}: ${OBJECTS}
 	${AR} rcs $@ $^ 
 
 $(LIBDKS_BUILD)/%.o: $(LIBDKS_SRC)/%.c $(LIBDKS_SRC)/%.h
-	$(CC) -fPIC -c $< -O -o $@
+	$(CC) -I${LIBERSSL_INCLUDE} -fPIC -c $< -O -o $@
 
 clean:
 	rm -rf $(LIBDKS_BUILD)/*.o
